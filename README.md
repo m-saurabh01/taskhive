@@ -1,6 +1,3 @@
-Here’s an enhanced `README.md` template for your Real-Time Collaborative Task Management Platform project:
-
-```md
 # Real-Time Collaborative Task Management Platform
 
 ## Project Overview
