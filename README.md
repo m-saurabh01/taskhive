@@ -28,8 +28,6 @@ This project aims to develop a scalable, real-time task management platform that
   - Kubernetes for orchestration
   - Cloud deployment (AWS/GCP/Azure)
 
-## Project Structure
-
 
 ## Getting Started
 
