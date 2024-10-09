@@ -1,4 +1,4 @@
-# Real-Time Collaborative Task Management Platform
+# TaskHive : Real-Time Collaborative Task Management Platform
 
 ## Project Overview
 
