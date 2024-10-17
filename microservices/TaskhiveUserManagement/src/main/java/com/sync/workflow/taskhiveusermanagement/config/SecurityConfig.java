@@ -1,42 +1,41 @@
 package com.sync.workflow.taskhiveusermanagement.config;
 
-import com.sync.workflow.taskhiveusermanagement.serviceImpl.CustomUserDetailsService;
-import com.sync.workflow.taskhiveusermanagement.utils.JwtRequestFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import javax.servlet.Filter;
+import com.sync.workflow.taskhiveusermanagement.serviceImpl.CustomUserDetailsService;
+import com.sync.workflow.taskhiveusermanagement.utils.JwtRequestFilter;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+@SuppressWarnings("removal")
+public class SecurityConfig {
 
-    @Autowired
-    private CustomUserDetailsService customUserDetailsService;
+    private final CustomUserDetailsService customUserDetailsService;
+    private final JwtRequestFilter jwtRequestFilter;
 
-    @Autowired
-    private JwtRequestFilter jwtRequestFilter;
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService, JwtRequestFilter jwtRequestFilter) {
+        this.customUserDetailsService = customUserDetailsService;
+        this.jwtRequestFilter = jwtRequestFilter;
     }
+    
 
     // Expose the AuthenticationManager bean
     @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     // Password encoder for encoding and matching passwords
@@ -45,19 +44,35 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    // Define the SecurityFilterChain instead of WebSecurityConfigurerAdapter
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
-                .authorizeRequests()
-                .antMatchers("/auth/login", "/auth/register").permitAll() // Public endpoints
-                .anyRequest().authenticated() // All other requests need authentication
-                .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); // No session management (stateless API)
+            .authorizeHttpRequests()
+            .requestMatchers("/auth/login").permitAll() // Fix: One matcher at a time
+            .requestMatchers("/auth/register").permitAll() // Fix: Another matcher
+            .anyRequest().authenticated() // All other requests need authentication
+            .and()
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); // Stateless API (no session)
 
-        Filter filter = (Filter) jwtRequestFilter;
-        Class<? extends Filter> clazz = (Class<? extends Filter>) UsernamePasswordAuthenticationFilter.class;
+        // Fix: Add the JWT filter before UsernamePasswordAuthenticationFilter
+        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
-        http.addFilterBefore(filter,clazz);
+        return http.build();
+    }
+    
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(customUserDetailsService); // Use CustomUserDetailsService
+        authProvider.setPasswordEncoder(passwordEncoder()); // Use BCryptPasswordEncoder
+        return authProvider;
+    }
+
+    @Bean
+    @Primary
+    public AuthenticationManagerBuilder configureAuthenticationManager(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(authenticationProvider());
+        return auth;
     }
 }
-

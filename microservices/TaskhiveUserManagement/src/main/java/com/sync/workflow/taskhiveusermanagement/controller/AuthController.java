@@ -1,8 +1,12 @@
 package com.sync.workflow.taskhiveusermanagement.controller;
 
+import com.sync.workflow.taskhiveusermanagement.dto.LoginRequest;
+import com.sync.workflow.taskhiveusermanagement.dto.LoginResponse;
+import com.sync.workflow.taskhiveusermanagement.dto.RegisterRequest;
+import com.sync.workflow.taskhiveusermanagement.dto.RegisterResponse;
+import com.sync.workflow.taskhiveusermanagement.entity.User;
+import com.sync.workflow.taskhiveusermanagement.service.UserService;
 import com.sync.workflow.taskhiveusermanagement.utils.JwtUtil;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,19 +33,12 @@ public class AuthController {
     private UserDetailsService userDetailsService;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private JwtUtil jwtUtil;
+    
 
-    @Data
-    public static class LoginRequest {
-        private String email;   // Using email instead of username
-        private String password;
-    }
-
-    @Data
-    @AllArgsConstructor
-    public static class LoginResponse {
-        private String token;
-    }
 
     @PostMapping("/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody LoginRequest loginRequest) {
@@ -50,6 +47,7 @@ public class AuthController {
                     new UsernamePasswordAuthenticationToken(
                             loginRequest.getEmail(), loginRequest.getPassword())
             );
+            
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             final UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getEmail());
@@ -57,7 +55,20 @@ public class AuthController {
 
             return ResponseEntity.ok(new LoginResponse(jwt));
         } catch (BadCredentialsException e) {
+        	e.printStackTrace();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect email or password");
+        }
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registerRequest) {
+        try{
+            User user=userService.registerUser(registerRequest);
+            RegisterResponse registerResponse =new RegisterResponse(user);
+            return ResponseEntity.status(HttpStatus.CREATED).body(registerResponse);
+        }
+        catch(Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 }

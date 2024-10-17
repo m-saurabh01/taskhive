@@ -5,28 +5,27 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
 @Component
+@SuppressWarnings("deprecation")
 public class JwtUtil {
 
-    private String SECRET_KEY = "your_secret_key"; // Replace with a strong secret key
-
-    // Extract the username (email) from the token
+    private String SECRET_KEY = "zW0fEmAl96O4sIO7g2v5p7dkqNSURP2HOe0UG/8uL/k="; 
+    
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    // Extract the expiration date from the token
+    
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    // Extract a specific claim from the token
+    
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
@@ -44,16 +43,17 @@ public class JwtUtil {
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, userDetails.getUsername()); // Username is the user's email
+        return createToken(claims, userDetails.getUsername()); 
     }
 
 
-    private String createToken(Map<String, Object> claims, String subject) {
+    
+	private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(subject)  // Subject is typically the username (email in this case)
+                .setSubject(subject)  
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // Token validity (10 hours in this case)
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }
