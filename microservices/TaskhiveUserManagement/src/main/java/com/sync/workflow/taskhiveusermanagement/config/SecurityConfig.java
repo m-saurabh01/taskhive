@@ -14,6 +14,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import com.sync.workflow.taskhiveusermanagement.serviceImpl.CustomUserDetailsService;
 import com.sync.workflow.taskhiveusermanagement.utils.JwtRequestFilter;
@@ -32,30 +35,30 @@ public class SecurityConfig {
     }
     
 
-    // Expose the AuthenticationManager bean
+   
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    // Password encoder for encoding and matching passwords
+    
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // Define the SecurityFilterChain instead of WebSecurityConfigurerAdapter
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-            .authorizeHttpRequests()
-            .requestMatchers("/auth/login").permitAll() // Fix: One matcher at a time
-            .requestMatchers("/auth/register").permitAll() // Fix: Another matcher
-            .anyRequest().authenticated() // All other requests need authentication
-            .and()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); // Stateless API (no session)
+    	http
+        .csrf().disable()  // Disable CSRF for APIs
+        .cors().and()  // Enable CORS
+        .authorizeHttpRequests()
+        .requestMatchers("/auth/login", "/auth/register").permitAll()  // Public endpoints
+        .anyRequest().authenticated()  // All other requests need authentication
+        .and()
+        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);  // Stateless session management
 
-        // Fix: Add the JWT filter before UsernamePasswordAuthenticationFilter
+        
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -64,8 +67,8 @@ public class SecurityConfig {
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(customUserDetailsService); // Use CustomUserDetailsService
-        authProvider.setPasswordEncoder(passwordEncoder()); // Use BCryptPasswordEncoder
+        authProvider.setUserDetailsService(customUserDetailsService); 
+        authProvider.setPasswordEncoder(passwordEncoder()); 
         return authProvider;
     }
 
@@ -74,5 +77,19 @@ public class SecurityConfig {
     public AuthenticationManagerBuilder configureAuthenticationManager(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(authenticationProvider());
         return auth;
+    }
+    
+    @Bean
+    public CorsFilter corsFilter() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedOrigin("http://localhost:3000");  
+        config.addAllowedMethod("*");
+        config.addAllowedHeader("*");
+        config.setAllowCredentials(true);
+        
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        
+        return new CorsFilter(source);
     }
 }

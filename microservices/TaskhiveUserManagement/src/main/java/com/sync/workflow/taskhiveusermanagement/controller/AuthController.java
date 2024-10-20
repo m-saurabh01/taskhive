@@ -1,12 +1,5 @@
 package com.sync.workflow.taskhiveusermanagement.controller;
 
-import com.sync.workflow.taskhiveusermanagement.dto.LoginRequest;
-import com.sync.workflow.taskhiveusermanagement.dto.LoginResponse;
-import com.sync.workflow.taskhiveusermanagement.dto.RegisterRequest;
-import com.sync.workflow.taskhiveusermanagement.dto.RegisterResponse;
-import com.sync.workflow.taskhiveusermanagement.entity.User;
-import com.sync.workflow.taskhiveusermanagement.service.UserService;
-import com.sync.workflow.taskhiveusermanagement.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,13 +10,24 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sync.workflow.taskhiveusermanagement.dto.LoginRequest;
+import com.sync.workflow.taskhiveusermanagement.dto.LoginResponse;
+import com.sync.workflow.taskhiveusermanagement.dto.RegisterRequest;
+import com.sync.workflow.taskhiveusermanagement.dto.RegisterResponse;
+import com.sync.workflow.taskhiveusermanagement.entity.User;
+import com.sync.workflow.taskhiveusermanagement.service.UserService;
+import com.sync.workflow.taskhiveusermanagement.utils.JwtUtil;
+
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin(origins = "http://localhost:3000")
 public class AuthController {
 
     @Autowired
@@ -52,8 +56,11 @@ public class AuthController {
 
             final UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getEmail());
             final String jwt = jwtUtil.generateToken(userDetails);
+            
+            jwtUtil.cacheToken(userDetails.getUsername(), jwt,jwtUtil.getTokenExpirationTime());
 
             return ResponseEntity.ok(new LoginResponse(jwt));
+            
         } catch (BadCredentialsException e) {
         	e.printStackTrace();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect email or password");
@@ -71,4 +78,13 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+    
+    @GetMapping("/tasks")
+    public ResponseEntity<?> getTasks() {
+       
+            return ResponseEntity.status(HttpStatus.OK).body("Tasks api is working fine");
+             
+    }
+    
+    
 }
