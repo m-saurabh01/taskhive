@@ -1,0 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Satisfy&family=Sixtyfour+Convergence&display=swap');
+
+#topnav {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #343131;
+    display: flex;
+    justify-content: space-between; /* Ensures logo and nav-right are on opposite sides */
+    align-items: center; /* Vertically centers the items */
+    padding: 0 20px; /* Adds padding to the sides */
+    font-family: serif;
+    font-size: 15px;
+}
+
+.nav-link {
+    display: inline-block;
+    height: 55px;
+    color: white;
+    text-align: center;
+    line-height: 55px;
+    text-decoration: none;
+    margin: 0 10px; /* Adds margin between links */
+}
+
+#logo {
+    font-size: 2.5rem;
+    font-family: "Satisfy", serif;
+    font-weight: bold;
+    margin: 1rem;
+}
+
+#logo:hover {
+    text-decoration: none;
+}
+
+.nav-right {
+    display: flex; /* Displays "About" and "Contact Us" side by side */
+}
+
+#about, #contact {
+    margin-left: 20px;
+    font-size: 1.25rem;
+    /* Adds space between the links */
+}
+
+/* Hover effect for about and contact */
+#about:hover, #contact:hover {
+    text-decoration: none;
+    color: #626cd6;
+}
