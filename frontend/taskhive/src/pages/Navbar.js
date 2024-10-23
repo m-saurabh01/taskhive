@@ -10,10 +10,10 @@ const Navbar =function(){
                TaskHive
            </a>
            <div className='nav-right'>
-               <a href='#' id='about' className='nav-link'>
+               <a href='#footer' id='about' className='nav-link'>
                    Services
                </a>
-               <a href='#' id='contact' className='nav-link'>
+               <a href='#footer' id='contact' className='nav-link'>
                    Contact Us
                </a>
            </div>

@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Satisfy&family=Sixtyfour+Convergence&display=swap');
 
+*{
+    scroll-behavior: smooth;
+}
+
 #topnav {
     width: 100%;
     position: fixed;
@@ -12,6 +16,7 @@
     padding: 0 20px; /* Adds padding to the sides */
     font-family: serif;
     font-size: 15px;
+    z-index: 5;
 }
 
 .nav-link {

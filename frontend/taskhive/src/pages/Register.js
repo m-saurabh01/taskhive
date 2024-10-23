@@ -3,6 +3,7 @@ import { register } from '../services/authService';
 import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import './register.css'
+import Footer from './Footer';
 
 const Register = () => {
     const [name, setName] = useState('');
@@ -11,17 +12,21 @@ const Register = () => {
     const [error, setError] = useState(null);
     const history = useNavigate();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            await register({ name, email, password });
-            history('/login'); // Redirect to login after registration
-        } catch (error) {
-            setError('Some error accured in registration: '+error.msg);
-        }
-    };
+   const handleSubmit = async (e) => {
+       e.preventDefault();
+
+       const response = await register({name,email,password});
+
+       if (response.error) {
+           setError(response.error);
+       } else {
+           history('/login');
+           setError(null);
+       }
+   };
 
     return (
+        <div>
             <div className='register-container'>
                 <Navbar />
                 <form className='register_form' onSubmit={handleSubmit}>
@@ -71,7 +76,9 @@ const Register = () => {
                     </p>
                 </form>
             </div>
-            );
+            <Footer />
+        </div>
+    );
 };
 
 export default Register;

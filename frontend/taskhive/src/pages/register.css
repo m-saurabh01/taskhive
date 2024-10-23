@@ -9,28 +9,38 @@
     font-family: "Montserrat", sans-serif;
 }
 
+
 body {
-    width: 100%;
-    min-height: 100vh;
-    padding: 0 10px;
     display: flex;
+    flex-direction: column; /* Stack items vertically */
+    justify-content: space-between; 
+    align-items: center; 
+    min-height: 120vh; 
+    margin: 0;
+    padding: 0;
     background: #B9E5E8;
+}
+
+.register-container {
+    flex: 1; /* Make the login container grow to fill available space */
+    display: flex;
+    min-height: 100vh; 
     justify-content: center;
     align-items: center;
 }
 
 .err-msg {
     margin-top: 2px;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
 }
 
-/* Register form styling */
+
 .register_form {
     width: 400px;
-    max-width: 435px; /* Adjusted the width to around 400px */
+    max-width: 435px; 
     background: #fff;
     border-radius: 6px;
-    padding: 35px 25px; /* Adjusted padding to fit the smaller form */
+    padding: 35px 25px; 
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
 }
 

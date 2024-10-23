@@ -4,12 +4,15 @@ import axios from 'axios';
 const API_URL = 'http://localhost:8080/auth'; 
 
 
-export const register = (userData) => {
-     axios.post(`${API_URL}/register`, userData).then((res)=>{
-        console.log(res.data);
-     }).catch(err=>{
-        console.log(err);
-     })
+export const register = async (userData) => {
+    try {
+        const res = await axios.post(`${API_URL}/register`, userData);
+        return res.data;
+    } catch (err) {
+        return {
+            error: err.response ? err.response.data : 'Something went wrong',
+        };
+    }
 };
 
 
