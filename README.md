@@ -4,7 +4,7 @@
 
 This project aims to develop a scalable, real-time task management platform that facilitates collaboration among users. The platform leverages modern technologies such as microservices, Kafka, Redis, and SQL/NoSQL databases to provide a robust and efficient solution for real-time task collaboration and management.
 
-## Key Features
+## Key Feature
 
 - **Real-time collaboration**: Multiple users can edit and view tasks simultaneously.
 - **Task management**: Create, edit, delete, and organize tasks efficiently.
