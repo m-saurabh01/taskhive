@@ -8,7 +8,7 @@ This project aims to develop a scalable, real-time task management platform that
 
 - **Real-time collaboration**: Multiple users can edit and view tasks simultaneously.
 - **Task management**: Create, edit, delete, and organize tasks efficiently.
-- **Role-based access control**: Different user roles (Admin, Editor, Viewer) with corresponding permissions.
+- **Role-based access control**: Different user role (Admin, Editor, Viewer) with corresponding permissions.
 - **Microservices architecture**: Decoupled services for better scalability and maintainability.
 - **Kafka event streaming**: Real-time messaging for updates and notifications.
 - **Redis caching**: Improved performance by caching frequently accessed data.
