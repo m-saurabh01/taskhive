@@ -105,7 +105,7 @@ docker-compose up --build
 
 ### Optional: Running with Kubernetes
 
-To deploy on a Kubernetes cluster, you can use the provided YAML manifests in the `kubernetes/` folder.
+To deploy on Kubernetes cluster, you can use the provided YAML manifests in the `kubernetes/` folder.
 
 ## Development Notes
 
